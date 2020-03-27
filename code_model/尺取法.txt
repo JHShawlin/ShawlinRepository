@@ -1,0 +1,92 @@
+题意：求连续最短区间长度使包含全部元素
+（二分会T，学习一发尺取法）
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+#include<cmath>
+#include<queue>
+#include<algorithm>
+#include<set>
+#include<map>
+using namespace std;
+#define INF 0x3f3f3f3f
+
+int n;
+int num[1001000];
+int main(){
+	while (~scanf("%d",&n)){
+		set<int> q;
+		for (int i=0 ; i<n ; i++){
+			scanf("%d",&num[i]);
+			q.insert(num[i]);
+		}
+		int sum = q.size();
+		int s = 0,t = 0,now = 0;
+		map<int,int> mp;
+		int ans = INF;
+		while (1){
+			while (t<n && now<sum){
+				if (mp[num[t++]]++ == 0){
+					now++;
+				}
+			}
+			if (now < sum) break;
+			ans = min(ans,t-s);
+			if (--mp[num[s++]]==0){
+				now--;
+			}
+		}
+		printf("%d\n",ans);
+	}
+	return 0;
+}
+
+题意：给出n，求i*i+(i+1)*(i+1)+...+j*j=n
+(记录平方和，尺取法不断查找)
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+#include<cmath>
+#include<queue>
+#include<vector>
+#include<stack>
+#include<algorithm>
+#include<set>
+#include<map>
+#include<deque> 
+using namespace std;
+#define INF 0x3f3f3f3f
+
+long long n;
+int ans[1000000][2];
+int main(){
+	while (~scanf("%lld",&n)){
+		long long s = 1,t = 1,sum = 0;
+		int cnt = 0;
+		while (1){
+			while (t*t<=n && sum<n){
+				sum += t*t;
+				t++;
+			}
+			if (sum < n) break;
+			if (sum == n){
+				ans[cnt][0] = s;
+				ans[cnt][1] = t;
+				cnt++;
+			}
+			sum -= s*s;
+			s++;
+		}
+		if (cnt==0) printf("0\n");
+		else {
+			printf("%d\n",cnt);
+			for (int i=0 ; i<cnt ; i++){
+				printf("%d",ans[i][1]-ans[i][0]);
+				for (int j=ans[i][0] ; j<ans[i][1] ; j++)
+					printf(" %d",j);
+				printf("\n");
+			}
+		}
+	}
+	return 0;
+} 

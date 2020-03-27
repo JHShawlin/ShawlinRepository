@@ -1,0 +1,59 @@
+Lightoj Race to 1 Again
+题意：N,取1到N中能整除N的数，自除，重复此操作，求使之为1的操作期望数
+我的推导：for example：10
+设操作期望数为x，则
+	x = (dp[1]+dp[2]+dp[5]+dp[10])/4 + 1,x = dp[10];（能整除的1，2，5，10加起来，平均一下就是期望了，要记得加上当前这一次操作）
+这个方程解出来就可以了，从前往后可推得全部（所以可以打表做）
+高中知识还能记得，感动--！
+int n;
+double dp[100100];
+
+int main(){
+	dp[1] = 0;
+	for (int i=2 ; i<=100000 ; i++){
+    	double sum = 0;
+    	int cnt = 0;
+    	for (int j=1 ; j*j<=i ; j++) if (i%j==0){
+        	sum += dp[j];
+        	cnt++;
+        	if(j*j != i){
+            	sum += dp[i/j];
+        		cnt++;
+        	}
+		}
+    	sum += cnt;
+    	dp[i] = sum/(cnt-1);
+	}
+	int t; cin>>t;
+	for (int cas=1 ; cas<=t ; cas++){
+		cin>>n;
+		printf("Case %d: %.7f\n",cas,dp[n]);
+	}
+	return 0;
+}
+
+
+Lightoj 1030 Discovering Gold
+题意：掷骰子前进，得到金子，求得到的最大期望
+dp[i] = (dp[i+1]+dp[i+2]+dp[i+3]+...+dp[i+6])/6 + gold[i]期望其实就是要平均一下，把后面这一步能得到的平均，
+由于是倒着求，所以后面的期望不包括当前的gold[i]，要记得加上
+int N;
+double gold[110];
+double E[110];
+int main(){
+	int t; cin>>t;
+	for (int cas=1 ; cas<=t ; cas++){
+		cin>>N;
+		for (int i=1 ; i<=N ; i++) cin>>gold[i];
+		E[N] = gold[N];
+		for (int i=N-1 ; i>=1 ; i--){
+			E[i] = gold[i];
+			int now = 6;
+			if (N-i < 6) now = N-i;
+			for (int j=1 ; j<=now ; j++)
+				E[i] += (double)E[i+j]/now;
+		}
+		printf("Case %d: %.7f\n",cas,E[1]);
+	}
+	return 0;
+}

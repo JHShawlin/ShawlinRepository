@@ -1,0 +1,83 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+using namespace std;
+#define MOD 1000000007
+#define maxv 2
+#define LL long long
+struct Matrix{
+	LL mat[maxv][maxv];
+};
+
+	Matrix mul(Matrix a,Matrix b){
+		Matrix ret;
+		memset(ret.mat,0,sizeof ret.mat);
+		for (int i = 0; i < maxv; i++) {
+			for (int j = 0; j < maxv; j++){
+				for (int k = 0; k < maxv; k++){
+					ret.mat[i][j] = (ret.mat[i][j] + 
+									a.mat[i][k] * b.mat[k][j]) % MOD;
+				}
+			}
+		}
+		return ret;
+	}
+Matrix ksm(Matrix e,LL n){
+	Matrix s;
+	s.mat[0][0] = s.mat[1][1] = 1;
+	s.mat[0][1] = s.mat[1][0] = 0;
+	while (n){
+		if (n & 1)
+			s = mul(s,e);
+		e = mul(e,e);
+		n = n>>1;
+	}
+	return s;
+}
+Matrix e;
+int main(){
+	LL n,m,k;
+	while (cin>>n>>m>>k){
+		e.mat[0][0] = m-k; e.mat[0][1] = k;
+		e.mat[1][0] = m-k; e.mat[1][1] = k-1;
+		e = ksm(e,n-1);
+		LL ans;
+		ans = ((m-k)*e.mat[0][0] + k*e.mat[1][0] + (m-k)*e.mat[0][1] + k*e.mat[1][1]) % MOD;
+		cout<<ans<<endl;
+	}
+	return 0;
+}
+
+
+#define maxv 10
+struct Matrix{
+	LL mat[maxv][maxv];
+};
+LL k,MOD;
+Matrix mul(Matrix a,Matrix b){
+	Matrix ret;
+	memset(ret.mat,0,sizeof ret.mat);
+	for (int i = 0; i < maxv; i++) {
+		for (int j = 0; j < maxv; j++){
+			for (int k = 0; k < maxv; k++){
+				ret.mat[i][j] = (ret.mat[i][j] + 
+								a.mat[i][k] * b.mat[k][j]) % MOD;
+			}
+		}
+	}
+	return ret;
+}
+Matrix ksm(Matrix e,LL n){
+	Matrix s;
+	memset(s.mat,0,sizeof s.mat);
+	for (int i=0 ; i<maxv ; i++)
+		s.mat[i][i] = 1;
+	while (n){
+		if (n & 1)
+			s = mul(s,e);
+		e = mul(e,e);
+		n = n>>1;
+	}
+	return s;
+}
+Matrix e;

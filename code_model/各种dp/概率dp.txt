@@ -1,0 +1,57 @@
+Light oj Throwing Dice
+题意：n个骰子求掷出的和>=m的概率
+int n,m;
+LL dp[26][151];//i骰子，j和，dp方法数
+LL p,q;
+LL gcd(LL a,LL b){
+	return b==0?a:gcd(b,a%b);
+}
+int main(){
+	memset(dp,0,sizeof dp);
+	dp[0][0] = 1;
+	for (int i=1 ; i<=25 ; i++)
+		for (int j=1 ; j<150 ; j++){
+			for (int k=1 ; k<=6&&k<=j ; k++)
+			dp[i][j] += dp[i-1][j-k];
+		}//显然当前方法数=求和（k=1到6）i-1个骰子和为j-k方法数
+	int t; cin>>t;
+	for (int cas=1 ; cas<=t ; cas++){
+		cin>>n>>m;
+		q = p = 0;
+		for (int i=n ; i<=n*6 ; i++){
+			q += dp[n][i];
+			if (i >= m){
+				p += dp[n][i];//概率即掷出n个骰子和>=m的方法数/所有和方法数
+			}
+		}
+		LL now = gcd(p,q);
+		p /= now; q /= now;
+		printf("Case %d: ",cas);
+		if (p==0 || q==0) printf("0\n");
+		else if (p == q) printf("1\n");
+		else {
+			printf("%lld/%lld\n",p,q);
+		}
+	}
+	return 0;
+}
+
+
+Light oj Marbles
+题意：有r个红球b个蓝球，第一个人随机取第二个人只取蓝，若最后一球为蓝则win，求win概率
+double dp[510][510];
+int main(){
+	int t; cin>>t;
+	memset(dp,0,sizeof dp);
+	for (int i=1 ; i<501 ; i++) dp[0][i] = 1.0;//只有红球一定win
+	for (int i=1 ; i<501 ; i++)
+		for (int j=1 ; j<501 ; j++){
+			dp[i][j] = 1.0*i/(i+j)*dp[i-1][j-1] + 1.0*j/(i+j)*dp[i][j-2];//显然win概率为当前取红win概率+当前取蓝win概率，由于第二个人一定取蓝故j-1，j-2
+		}
+	int r,b;
+	for (int cas=1 ; cas<=t ; cas++){
+		cin>>r>>b;
+		printf("Case %d: %.7f\n",cas,dp[r][b]);
+	}
+	return 0;
+}

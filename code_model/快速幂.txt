@@ -1,0 +1,17 @@
+int quick_mod(int x,int n,int mod){
+	int ret = 1;
+	while (n){
+		if (n&1) ret = ret*x%mod;
+		x = x*x%mod;
+		n>>=1;
+	}
+	return ret;
+}
+
+LL pow_mod(LL a,LL n,LL mod){
+	if (n==0) return 1;
+	LL x = pow_mod(a,n/2,mod);
+	LL ans = x*x%mod;
+	if (n%2==1) ans=ans*a%mod;
+	return ans;
+}

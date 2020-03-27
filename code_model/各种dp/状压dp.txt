@@ -1,0 +1,115 @@
+状压好迷啊，感觉好难理解到
+http://wenku.baidu.com/link?url=vqfHt7PrLX1lmIRj6EBpUnEtj38AergjPmEXpQjfz8cM8UCkcLEFEYFvoEidBKyOKy7Alv2_YKHdHxZQhZb6633okinBcYK6Ss0TdCaokaa
+
+Lightoj Agent 47
+题意：总共n人，每个人有生命值，每个人手中武器可以对其他人造成的伤害构成n*n二维数组
+初始武器伤害为1，杀死人可以获得武器，求最少开枪数
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+#include<cmath>
+#include<queue>
+#include<vector>
+#include<stack>
+#include<algorithm>
+#include<set>
+#include<map>
+#include<deque> 
+using namespace std;
+#define INF 0x3f3f3f3f
+typedef long long LL;
+typedef pair<int,int> ppp;
+
+char s[20];
+int dp[40000],attack[40000][16];
+int HP[16],mp[16][16];
+int n,sum;
+int dfs(int x){
+	if (dp[x] != -1) return dp[x];
+	if (x==0) return dp[0] = 0;
+	dp[x] = INF;
+	for (int i=0 ; i<n ; i++){
+		if (x&(1<<i)){
+			int now = x - (1<<i);//点集中除去i,不能用那人的枪打那人
+			int k = (HP[i]+attack[now][i]-1)/attack[now][i];//开枪数
+			dp[x] = min(dp[x],k+dfs(now));
+		}
+	}
+	return dp[x];
+}
+int main(){
+	int t; cin>>t;
+	for (int cas=1 ; cas<=t ; cas++){
+		cin>>n;
+		memset(dp,-1,sizeof dp);
+		memset(attack,0,sizeof attack);
+		for (int i=0 ; i<n ; i++){
+			cin>>HP[i];
+			attack[0][i] = 1;
+		}
+		for (int i=0 ; i<n ; i++){
+			cin>>s;
+			for (int j=0 ; j<n ; j++)
+				mp[i][j] = s[j]-'0';
+		}
+		sum = (1<<n)-1;//状压预处理出所有枪对人的伤害
+		for (int i=0 ; i<=sum ; i++)
+			for (int j=0 ; j<n ; j++){
+				if (i & (1<<j)){
+					int now = i-(1<<j);//点集除去j
+					for (int k=0 ; k<n ; k++)
+						attack[i][k] = max(attack[now][k],mp[j][k]);//遍历枪j的伤害
+				}
+			}
+		printf("Case %d: %d\n",cas,dfs(sum));
+	}
+	return 0;
+} 
+
+Lightoj 1011 Marriage Ceremonies
+题意：n男n女，男对女的满意度构成二维数组，求配对后最大满意度
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+#include<cmath>
+#include<queue>
+#include<vector>
+#include<stack>
+#include<algorithm>
+#include<set>
+#include<map>
+#include<deque> 
+using namespace std;
+#define INF 0x3f3f3f3f
+typedef long long LL;
+typedef pair<int,int> ppp;
+
+int n;
+int mp[20][20];
+int dp[20][(1<<16)+1];
+int main(){
+	int t; cin>>t;
+	for (int cas=1 ; cas<=t ; cas++){
+		cin>>n;
+		for (int i=1 ; i<=n ; i++)
+			for (int j=1 ; j<=n ; j++)
+			cin>>mp[i][j];
+		memset(dp,0,sizeof dp);
+		for (int i=1 ; i<=n ; i++)
+			for (int j=0 ; j<(1<<n) ; j++){
+				int cnt = 0;
+				for (int k=0 ; k<n ; k++){
+					if (j & (1<<k))
+						cnt++;
+				}
+				if (cnt != i-1) continue;//当前点集中点的数目应为i-1
+				for (int k=0 ; k<n ; k++){
+					if (j & (1<<k))
+						continue;
+					dp[i][j | (1<<k)] = max(dp[i][j | (1<<k)],dp[i-1][j]+mp[i][k+1]);//遍历k放入点集中的情况
+				}
+			}
+		printf("Case %d: %d\n",cas,dp[n][(1<<n)-1]);
+	}
+	return 0;
+}

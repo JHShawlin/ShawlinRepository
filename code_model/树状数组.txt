@@ -1,0 +1,39 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+using namespace std;
+const int maxn = 100001;
+int N;
+int a[maxn];
+
+void ADD(int x,int c){
+	while (x <= N) {
+		a[x] += c;
+		x += x&(-x);
+	}
+}
+
+int sum(int x){
+	int s = 0;
+	while (x > 0){
+		s += a[x];
+		x -= x&(-x);
+	}
+	return s;
+}
+
+int main(){
+	int x,y;
+	while (scanf("%d",&N)){
+		if (N == 0) break;
+		memset(a,0,sizeof a);
+		for (int i=0 ; i<N ; i++){
+			scanf("%d%d",&x,&y);
+			ADD(x,1);
+			ADD(y+1,-1);
+		}
+		for (int i=1 ; i<N ; i++) printf("%d ",sum(i));
+		printf("%d\n",sum(N));
+	}
+	return 0;
+}

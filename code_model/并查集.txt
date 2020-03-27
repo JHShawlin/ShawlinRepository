@@ -1,0 +1,12 @@
+
+int find(int x){  
+    if(f[x]!=x)  
+    f[x]=find(f[x]);  
+    return f[x];  
+}
+void work(int a,int b){
+	int tx = find(a);
+	int ty = find(b);
+	f[ty] = tx;
+	return ;
+}  

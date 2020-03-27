@@ -1,0 +1,124 @@
+Lightoj 1068 
+题意：求A到B中是k的倍数且各个位上的数之和也为k的倍数的数有几个
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+#include<cmath>
+#include<queue>
+#include<vector>
+#include<stack>
+#include<algorithm>
+#include<set>
+#include<map>
+#include<deque> 
+using namespace std;
+#define INF 0x3f3f3f3f
+typedef long long LL;
+typedef pair<int,int> ppp;
+
+int a,b,k;
+int dp[15][92][92];
+int num[15];
+// A B < 2^31, 最多10位,
+// 所以和最大99不到, 所以如果k >= 100,直接输出0, k < 100的, 
+//dp[i][j][k]表示到第i位, 每位数的和模mod是k, 数本身模mod是j的数个数 
+
+int dfs(int cur,int mod1,int mod2,bool flag){
+	if (cur==-1) return mod1==0 && mod2==0;
+	if (!flag && ~dp[cur][mod1][mod2]) return dp[cur][mod1][mod2];
+	int ans = 0;
+	int now = flag?num[cur]:9;
+	for (int i=0 ; i<=now ; i++)
+		ans += dfs(cur-1,(mod1*10+i)%k,(mod2+i)%k,flag && i==now);
+	if (!flag) dp[cur][mod1][mod2] = ans;
+	return ans;
+}
+int work(int n){
+	int cnt = 0;
+	while (n){
+		num[cnt++] = n%10;
+		n /= 10;
+	}
+	memset(dp,-1,sizeof dp);
+	return dfs(cnt-1,0,0,1);
+}
+int main(){
+	int T; cin>>T;
+	for (int cas=1 ; cas<=T ; cas++){
+		cin>>a>>b>>k;
+		if (k >= 90){
+			printf("Case %d: 0\n",cas);
+			continue;
+		}
+		printf("Case %d: %d\n",cas,work(b)-work(a-1));
+	}
+	return 0;
+}
+
+Lightoj 1021
+题意：base进制，k除数,给出一个base进制数，各个位可随意组合，
+LL dp[1<<16][20];
+char s[20];
+int base,k;
+int work(char c){
+	if (c>='0' && c<='9') return c-'0';
+	return c-'A'+10;
+}
+int main(){
+	int T; cin>>T;
+	for (int cas=1 ; cas<=T ; cas++){
+		cin>>base>>k;
+		cin>>s;
+		memset(dp,0,sizeof dp);
+		dp[0][0] = 1;
+		int len = strlen(s),sum = 1<<len;
+		for (int i=0 ; i<sum ; i++)
+			for (int j=0 ; j<len ; j++){
+				if (i & (1<<j)) continue;
+				for (int cnt=0 ; cnt<k ; cnt++)
+					dp[i | (1<<j)][(cnt*base+work(s[j]))%k] += dp[i][cnt];
+			}
+		printf("Case %d: %lld\n",cas,dp[sum-1][0]);
+	}
+	return 0;
+}
+
+Lightoj 1032
+题意：给出n,求0到n中数转为二进制可得到11的总数（111 中有2个11）
+这题不会，看TaoSama的：
+dp[i][cnt][0/1]:=从高到低第i位出现cnt个“11”且前一位是0还是1的总个数 
+直接转移就好啦
+LL n, digit[35], dp[35][35][2];
+
+LL dfs(int i, int c, int s, int e) {
+    if(!i) return c;
+    if(!e && ~dp[i][c][s]) return dp[i][c][s];
+    int to = e ? digit[i] : 1;
+    LL ret = 0;
+    for(int d = 0; d <= to; ++d)
+        ret += dfs(i - 1, c + (s && d), d == 1, e && d == to);
+    return e ? ret : dp[i][c][s] = ret;
+}
+
+LL calc(LL x) {
+    int cnt = 0;
+    for(; x; x /= 2) digit[++cnt] = x & 1;
+    return dfs(cnt, 0, 0, 1);
+}
+
+int main() {
+#ifdef LOCAL
+    freopen("C:\\Users\\TaoSama\\Desktop\\in.txt", "r", stdin);
+//  freopen("C:\\Users\\TaoSama\\Desktop\\out.txt","w",stdout);
+#endif
+    ios_base::sync_with_stdio(0);
+
+    int t; scanf("%d", &t);
+    int kase = 0;
+    memset(dp, -1, sizeof dp);
+    while(t--) {
+        scanf("%lld", &n);
+        printf("Case %d: %lld\n", ++kase, calc(n));
+    }
+    return 0;
+}

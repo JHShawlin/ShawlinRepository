@@ -1,0 +1,147 @@
+#define M 5010//题目中可能的最大点数
+int STACK[M],top=0;//Tarjan算法中的栈
+bool InStack[M];//检查是否在栈中
+int DFN[M];//深度优先搜索访问次序
+ 
+int Low[M];//能追溯到的最早的次序
+int ComponentNumber=0;//有向图强连通分量个数
+int Index=0;//索引号
+vector<int> Edge[M];//邻接表表示
+vector<int> Component[M];//获得强连通分量结果
+int InComponent[M];//记录每个点在第几号强连通分量里
+int ComponentDegree[M];//记录每个强连通分量的度
+ 
+void Tarjan(int i)
+{
+    int j;
+    DFN[i]=Low[i]=Index++;
+    InStack[i]=true;STACK[++top]=i;
+    for (int e=0;e<Edge[i].size();e++)
+    {
+        j=Edge[i][e];
+        if (DFN[j]==-1)
+        {
+            Tarjan(j);
+            Low[i]=min(Low[i],Low[j]);
+        }
+        else
+            if (InStack[j]) Low[i]=min(Low[i],DFN[j]);
+    }
+    if (DFN[i]==Low[i])
+    {
+        ComponentNumber++;
+        do{
+            j=STACK[top--];
+            InStack[j]=false;
+            Component[ComponentNumber].
+            push_back(j);
+            InComponent[j]=ComponentNumber;
+        }
+        while (j!=i);
+    }
+}
+
+hdu 5934 bomb
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+#include<cmath>
+#include<queue>
+#include<vector>
+#include<stack>
+#include<algorithm>
+#include<set>
+#include<map>
+#include<deque> 
+using namespace std;
+#define INF 0x3f3f3f3f
+#define eps (1e-8)
+typedef long long LL;
+typedef pair<int,int> ppp;
+
+int vis[1010],Dfn[1010],low[1010],head[1010],stack1[1010],num[1010],in[1010];
+int tot;
+struct node{
+	int to,nxt;
+}edge[1000100];
+
+struct lala{
+	LL x,y,r,c;
+}a[1010];
+bool cmp(lala a,lala b){
+	return a.c < b.c;
+}
+void add_edge(int u,int v){
+	edge[tot].to = v;
+	edge[tot].nxt = head[u];
+	head[u] = tot++;
+}
+int n;
+int cut,tim,top;
+LL cost[1010];
+void init(){
+	memset(head,-1,sizeof head);
+	tot = 0;
+	memset(vis,0,sizeof vis);
+	memset(in,0,sizeof in);
+	memset(cost,INF,sizeof cost);
+	memset(stack1,0,sizeof stack1);
+	memset(num,0,sizeof num);
+	memset(Dfn,0,sizeof Dfn); memset(low,0,sizeof low);
+	tim = cut = top = 0;
+}
+
+void Tarjan(int u){
+	int v;
+	low[u] = Dfn[u] = ++tim;
+	stack1[top++] = u;
+	vis[u] = 1;
+	for (int i=head[u] ; ~i ; i=edge[i].nxt){
+		int v = edge[i].to;
+		if (!Dfn[v]){
+			Tarjan(v);
+			low[u] = min(low[u],low[v]);
+		}
+		else if (vis[v]){
+			low[u] = min(low[u],Dfn[v]);
+		}
+	}
+	if (low[u]==Dfn[u]){
+		cut++;
+		do{
+			v = stack1[--top];
+			num[v] = cut;
+			cost[cut] = min(cost[cut],a[v].c);
+			vis[v] = 0;
+		}while (u != v);
+	}
+}
+int main(){
+	int T; scanf("%d",&T);
+	for (int cas=1 ; cas<=T ; cas++){
+		scanf("%d",&n);
+		init();
+		for (int i=1 ; i<=n ; i++)
+			scanf("%lld%lld%lld%lld",&a[i].x,&a[i].y,&a[i].r,&a[i].c);
+		for (int i=1 ; i<=n ; i++)
+			for (int j=1 ; j<=n ; j++) if (i!=j){
+				if ((a[i].x-a[j].x)*(a[i].x-a[j].x)+(a[i].y-a[j].y)*(a[i].y-a[j].y)
+					<= a[i].r*a[i].r)
+						add_edge(i,j);
+			}
+		for (int i=1 ; i<=n ; i++) if (!Dfn[i])
+			Tarjan(i);
+		for (int i=1 ; i<=n ; i++)
+			for (int j=head[i] ; ~j ; j=edge[j].nxt){
+				int v = edge[j].to;
+				if (num[i] != num[v])
+					in[num[v]]++;
+			}
+		LL ans = 0;
+		for (int i=1 ; i<=cut ; i++) if (!in[i]){
+			ans += cost[i]; 
+		}
+		printf("Case #%d: %lld\n",cas,ans);
+	}
+	return 0;
+}

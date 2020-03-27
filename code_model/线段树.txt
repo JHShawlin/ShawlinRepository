@@ -1,0 +1,82 @@
+void build(int cur,int l,int r){
+	tree[cur].l = l;
+	tree[cur].r = r;
+	if (l == r) {
+		tree[cur].ma = a[l];
+		tree[cur].mi = a[l];
+		return ;
+	}
+	build(2*cur , l , (l+r)>>1);
+	build(2*cur+1 , ((l+r)>>1)+1 , r);
+	tree[cur].ma = max(tree[2*cur].ma , tree[2*cur+1].ma);
+	tree[cur].mi = min(tree[2*cur].mi , tree[2*cur+1].mi);
+}
+
+void query(int cur , int l , int r){
+	if (tree[cur].l == l && tree[cur].r == r ) {
+		maxn = max(maxn,tree[cur].ma);
+		minn = min(minn,tree[cur].mi);
+		return ;
+	}
+	int mid = (tree[cur].l + tree[cur].r)/2;
+	if (r <= mid) query(2*cur,l,r);
+	else if (l >= mid+1 ) query(2*cur+1 , l, r);
+	else {
+		query(2*cur , l , mid);
+		query(2*cur+1 , mid+1 , r);
+	}
+
+}
+
+
+
+
+
+void pushup(int cur){
+	tree[cur].sum = tree[cur<<1].sum + tree[cur<<1|1].sum;
+}
+void pushdown(int cur,int m){
+	if (tree[cur].val){
+		tree[cur<<1].val += tree[cur].val;
+		tree[cur<<1|1].val += tree[cur].val;
+		tree[cur<<1].sum += (long long) (m - (m>>1))*tree[cur].val;
+		tree[cur<<1|1].sum += (long long) (m>>1)*tree[cur].val;
+		tree[cur].val = 0;
+	}
+}
+void build(int l,int r,int cur){
+	tree[cur].val = 0;
+	if (l == r){
+		scanf("%I64d",&tree[cur].sum);
+		return ;
+	}
+	int mid = (l+r)>>1;
+	build(l,mid,cur<<1);
+	build(mid+1,r,cur<<1|1);
+	pushup(cur);
+}
+long long query(int L,int R,int l,int r,int cur){
+	if (L<=l && R>=r){
+		return tree[cur].sum;
+	}
+	int mid = (l+r)>>1;
+	pushdown(cur,r-l+1);
+	long long ans=0;
+	if (L<=mid) ans+=query(L,R,l,mid,cur<<1);
+	if (mid<R) ans+=query(L,R,mid+1,r,cur<<1|1);
+	pushup(cur);
+	return ans;
+}
+
+void update(int L,int R,int k,int l,int r,int cur){
+	if (L<=l && r<=R){
+		tree[cur].sum += (long long) k*(r-l+1);
+		tree[cur].val += k;
+		return ;
+	}
+	pushdown(cur,r-l+1);
+	int mid = (l+r)>>1;
+	if (L <= mid) update(L,R,k,l,mid,cur<<1);
+	if (mid < R) update(L,R,k,mid+1,r,cur<<1|1);
+	pushup(cur);
+}

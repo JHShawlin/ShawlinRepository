@@ -1,0 +1,39 @@
+void get_prime() {  
+    int m = sqrt(1000000 + 1);  
+    pri_cnt = 0;  
+    memset(vis, 0, sizeof(vis));  
+    vis[0] = 1;  
+    vis[1] = 1;  
+    for(int i = 2; i <= m; ++i) {  
+        if(!vis[i]) {  
+            prime[pri_cnt++] = i;  
+            for(int j = i * i; j <= 1000005;j += i)  
+                vis[j] = 1;  
+        }  
+    }  
+}  
+  
+void Init() {  
+    get_prime();  
+    cnt[0] = 0;  
+    for(int i = 1; i <= 1000000; ++i) {  
+        if(!vis[i]) cnt[i] = cnt[i-1] + 1;  
+        else cnt[i] = cnt[i-1];  
+    }  
+}  
+
+
+
+
+
+
+void isprime(){
+	memset(prime,true,sizeof (prime));  
+    for(int i=1 ; i<N ; i++) 
+		if(i%2==0) prime[i] = false;  
+    for(int i=3 ; i<=N/2+1 ; i++) 
+		for(int j=i+i ; j<=N-1 ; j+=i) 
+			if(j <= N-1) prime[j]=false;  
+    prime[1]=false;  
+    prime[2]=true;    
+}

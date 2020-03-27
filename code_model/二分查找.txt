@@ -1,0 +1,9 @@
+while (low <= high){
+	int mid = (low+high)/2;
+	if (){
+		low = mid+1;
+	}
+	else{
+		high = mid-1;
+	}
+}
